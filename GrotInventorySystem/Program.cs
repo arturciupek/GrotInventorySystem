@@ -35,6 +35,7 @@ namespace GrotInventorySystem
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders();
@@ -46,6 +47,14 @@ namespace GrotInventorySystem
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                var adminEmail = builder.Configuration["SeedAdmin:Email"];
+                var adminPassword = builder.Configuration["SeedAdmin:Password"];
+
+                if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword))
+                {
+                    DbInitializer.SeedAsync(app.Services, adminEmail, adminPassword)
+                        .GetAwaiter().GetResult();
+                }
                 app.UseMigrationsEndPoint();
             }
             else
