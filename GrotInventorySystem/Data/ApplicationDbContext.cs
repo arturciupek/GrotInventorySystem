@@ -9,4 +9,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<Module> Modules => Set<Module>();
+    public DbSet<Weapon> Weapons => Set<Weapon>();
 }
