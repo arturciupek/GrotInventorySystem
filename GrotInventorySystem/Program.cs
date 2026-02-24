@@ -1,6 +1,7 @@
 using GrotInventorySystem.Components;
 using GrotInventorySystem.Components.Account;
 using GrotInventorySystem.Data;
+using GrotInventorySystem.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,8 @@ namespace GrotInventorySystem
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+            builder.Services.AddScoped<ModuleAssignmentService>();
 
             var app = builder.Build();
 
