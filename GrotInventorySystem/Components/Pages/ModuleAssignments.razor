@@ -1,0 +1,219 @@
+﻿@page "/module-assignments"
+
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
+
+@inject ApplicationDbContext Db
+@inject ModuleAssignmentService ModuleAssignmentService
+
+<h3>Przypisania modułów</h3>
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <p><b>@Message</b></p>
+}
+
+<div style="margin-bottom: 20px;">
+    <h4>Montaż modułu do broni</h4>
+
+    <div>
+        <label>Moduł:</label><br />
+        <select @bind="SelectedModuleIdForMount">
+            <option value="">-- wybierz moduł --</option>
+            @foreach (var module in Modules)
+            {
+                <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
+            }
+        </select>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>Broń:</label><br />
+        <select @bind="SelectedWeaponIdForMount">
+            <option value="">-- wybierz broń --</option>
+            @foreach (var weapon in Weapons)
+            {
+                <option value="@weapon.Id">@weapon.SerialNumber</option>
+            }
+        </select>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <button @onclick="MountSelectedModule">Zamontuj</button>
+    </div>
+</div>
+
+<hr />
+
+<div style="margin-top: 20px;">
+    <h4>Demontaż modułu</h4>
+
+    <div>
+        <label>Moduł:</label><br />
+        <select @bind="SelectedModuleIdForUnmount">
+            <option value="">-- wybierz moduł --</option>
+            @foreach (var module in Modules)
+            {
+                <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
+            }
+        </select>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <label>Lokalizacja docelowa:</label><br />
+        <select @bind="SelectedLocationIdForUnmount">
+            <option value="">-- wybierz lokalizację --</option>
+            @foreach (var location in Locations)
+            {
+                <option value="@location.Id">@location.Name</option>
+            }
+        </select>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <button @onclick="UnmountSelectedModule">Zdemontuj</button>
+    </div>
+</div>
+
+<hr />
+
+<div style="margin-top: 20px;">
+    <h4>Aktualne aktywne przypisania</h4>
+
+    @if (ActiveAssignments.Count == 0)
+    {
+        <p>Brak aktywnych przypisań.</p>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th style="padding-right: 20px;">Moduł</th>
+                    <th style="padding-right: 20px;">Broń</th>
+                    <th style="padding-right: 20px;">Data montażu (UTC)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ActiveAssignments)
+                {
+                    <tr>
+                        <td style="padding-right: 20px;">@item.ModuleLabel</td>
+                        <td style="padding-right: 20px;">@item.WeaponSerialNumber</td>
+                        <td style="padding-right: 20px;">@item.MountedAtUtc</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<Module> Modules { get; set; } = new();
+    private List<Weapon> Weapons { get; set; } = new();
+    private List<Location> Locations { get; set; } = new();
+
+    private List<ActiveAssignmentRow> ActiveAssignments { get; set; } = new();
+
+    // string? jest wygodne do <select>, bo pusty wybór = null / ""
+    private string? SelectedModuleIdForMount { get; set; }
+    private string? SelectedWeaponIdForMount { get; set; }
+
+    private string? SelectedModuleIdForUnmount { get; set; }
+    private string? SelectedLocationIdForUnmount { get; set; }
+
+    private string? Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Modules = await Db.Modules
+            .OrderBy(m => m.Name)
+            .ThenBy(m => m.SerialNumber)
+            .ToListAsync();
+
+        Weapons = await Db.Weapons
+            .OrderBy(w => w.SerialNumber)
+            .ToListAsync();
+
+        Locations = await Db.Locations
+            .OrderBy(l => l.Name)
+            .ToListAsync();
+
+        ActiveAssignments = await Db.WeaponModuleAssignments
+            .Where(x => x.UnmountedAtUtc == null)
+            .Include(x => x.Module)
+            .Include(x => x.Weapon)
+            .OrderByDescending(x => x.MountedAtUtc)
+            .Select(x => new ActiveAssignmentRow
+            {
+                ModuleLabel = x.Module.Name + " (" + x.Module.SerialNumber + ")",
+                WeaponSerialNumber = x.Weapon.SerialNumber,
+                MountedAtUtc = x.MountedAtUtc
+            })
+            .ToListAsync();
+    }
+
+    private async Task MountSelectedModule()
+    {
+        Message = null;
+
+        if (!Guid.TryParse(SelectedModuleIdForMount, out var moduleId))
+        {
+            Message = "Wybierz moduł do montażu.";
+            return;
+        }
+
+        if (!Guid.TryParse(SelectedWeaponIdForMount, out var weaponId))
+        {
+            Message = "Wybierz broń.";
+            return;
+        }
+
+        var success = await ModuleAssignmentService.MountModuleAsync(moduleId, weaponId);
+
+        Message = success
+            ? "Moduł został zamontowany."
+            : "Montaż nie powiódł się (moduł może być już zamontowany lub dane są niepoprawne).";
+
+        await LoadDataAsync();
+    }
+
+    private async Task UnmountSelectedModule()
+    {
+        Message = null;
+
+        if (!Guid.TryParse(SelectedModuleIdForUnmount, out var moduleId))
+        {
+            Message = "Wybierz moduł do demontażu.";
+            return;
+        }
+
+        if (!Guid.TryParse(SelectedLocationIdForUnmount, out var locationId))
+        {
+            Message = "Wybierz lokalizację docelową.";
+            return;
+        }
+
+        var success = await ModuleAssignmentService.UnmountModuleAsync(moduleId, locationId);
+
+        Message = success
+            ? "Moduł został zdemontowany."
+            : "Demontaż nie powiódł się (moduł może nie być zamontowany lub lokalizacja jest niepoprawna).";
+
+        await LoadDataAsync();
+    }
+
+    private class ActiveAssignmentRow
+    {
+        public string ModuleLabel { get; set; } = default!;
+        public string WeaponSerialNumber { get; set; } = default!;
+        public DateTime MountedAtUtc { get; set; }
+    }
+}
