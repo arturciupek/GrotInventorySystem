@@ -18,14 +18,18 @@
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="module-assignments">
-                <span class="bi bi-diagram-3-fill-nav-menu" aria-hidden="true"></span> Montaż / demontaż
-            </NavLink>
-        </div>
-
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="module-assignments">
+                        <span class="bi bi-diagram-3-fill-nav-menu" aria-hidden="true"></span> Montaż / demontaż
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="weapons">
+                        <span class="bi bi-list-ul-nav-menu" aria-hidden="true"></span> Broń
+                    </NavLink>
+                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name

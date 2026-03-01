@@ -1,0 +1,52 @@
+﻿@page "/weapons"
+
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+
+@inject ApplicationDbContext Db
+
+<h3>Lista broni</h3>
+
+@if (WeaponsList.Count == 0)
+{
+    <p><b>Brak broni w ewidencji!</b></p>
+}
+else
+{
+    <table>
+        <thead>         
+            <tr>        
+                <th>Numer seryjny</th>
+                <th>Lokalizacja</th>
+            </tr>
+        </thead>
+        <tbody>   
+            @foreach (var weapon in WeaponsList)
+            {
+                <tr>        
+                    <td>@weapon.SerialNumber</td>
+                    <td>@weapon.Location.Name</td>
+                </tr>
+            }
+        </tbody>
+            
+    </table>
+}
+
+@code {
+    private List<Weapon> WeaponsList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        WeaponsList = await Db.Weapons
+            .Include(w => w.Location)
+            .OrderBy(w => w.SerialNumber)
+            .ToListAsync();
+    }
+}
