@@ -1,0 +1,97 @@
+﻿@page "/weapon-edit/{Id:guid}"
+
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+
+@inject ApplicationDbContext Db
+
+<h3>Edytuj broń</h3>
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <p><b>@Message</b></p>
+}
+
+<div>
+    <label>Numer seryjny:</label><br />
+    <input @bind="SerialNumber" />
+</div>
+
+<div style="margin-top: 10px;">
+    <label>Lokalizacja:</label><br />
+    <select @bind="SelectLocationId">
+        <option value="">-- wybierz lokalizację --</option>
+
+        @foreach (var location in Locations)
+        {
+            <option value="@location.Id">@location.Name</option>
+        }
+    </select>
+</div>
+
+<div style="margin-top: 10px;">
+    <button @onclick="EditWeapon">Zapisz</button>
+</div>
+
+@code {
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private List<Location> Locations { get; set; } = new();
+    private string? SerialNumber { get; set; }
+    private string? SelectLocationId { get; set; }
+    private string? Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Locations = await Db.Locations
+            .OrderBy(l => l.Name)
+            .ToListAsync();
+
+        var weapon = await Db.Weapons.FindAsync(Id);
+        if (weapon != null)
+        {
+            SerialNumber = weapon.SerialNumber;
+            SelectLocationId = weapon.LocationId.ToString();
+        }
+    }
+
+    private async Task EditWeapon()
+    {
+        if (string.IsNullOrWhiteSpace(SerialNumber))
+        {
+            Message = "Podaj numer seryjny!";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(SelectLocationId))
+        {
+            Message = "Wybierz lokalizację!";
+            return;
+        }
+
+        Guid.TryParse(SelectLocationId, out var locationId);
+
+        var weapon = await Db.Weapons.FindAsync(Id);
+        if(weapon == null)
+        {
+            Message = "Nie znaleziono broni!";
+            return;
+        }
+
+        weapon.SerialNumber = SerialNumber!;
+        weapon.LocationId = locationId;
+
+        await Db.SaveChangesAsync();
+        Message = "Broń została edytowana!";
+    }
+
+}

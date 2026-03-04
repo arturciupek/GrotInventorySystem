@@ -21,6 +21,7 @@ else
             <tr>        
                 <th>Numer seryjny</th>
                 <th>Lokalizacja</th>
+                <th>Akcja</th>
             </tr>
         </thead>
         <tbody>   
@@ -29,6 +30,7 @@ else
                 <tr>        
                     <td>@weapon.SerialNumber</td>
                     <td>@weapon.Location.Name</td>
+                    <td><a href="/weapon-edit/@weapon.Id">Edytuj</a></td>
                 </tr>
             }
         </tbody>
