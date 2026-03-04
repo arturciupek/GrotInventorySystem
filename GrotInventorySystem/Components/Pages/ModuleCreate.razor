@@ -1,4 +1,4 @@
-﻿@page "/weapon-create"
+﻿@page "/module-create"
 
 @rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
@@ -7,38 +7,44 @@
 
 @inject ApplicationDbContext Db
 
-<h3>Dodaj broń</h3>
+<h3>Dodaj moduł</h3>
 
 @if (!string.IsNullOrWhiteSpace(Message))
 {
     <p><b>@Message</b></p>
 }
 
-    <div>
-        <label>Numer seryjny:</label><br />
-        <input @bind="SerialNumber"/>
-    </div>
+<div style="margin-top: 10px;">
+    <label>Nazwa:</label><br />
+    <input @bind="Name" />
+</div>
 
-    <div style="margin-top: 10px;">
-        <label>Lokalizacja:</label><br />
-        <select @bind="SelectLocationId">
-            <option value="">-- wybierz lokalizację --</option>
+<div>
+    <label>Numer seryjny:</label><br />
+    <input @bind="SerialNumber" />
+</div>
 
-            @foreach (var location in Locations)
-            {
+<div style="margin-top: 10px;">
+    <label>Lokalizacja:</label><br />
+    <select @bind="SelectLocationId">
+        <option value="">-- wybierz lokalizację --</option>
+
+        @foreach (var location in Locations)
+        {
             <option value="@location.Id">@location.Name</option>
         }
-        </select>
-    </div>
+    </select>
+</div>
 
-    <div style="margin-top: 10px;">
-        <button @onclick="SaveWeapon">Zapisz</button>
-    </div>
-    
+<div style="margin-top: 10px;">
+    <button @onclick="SaveModule">Zapisz</button>
+</div>
+
 @code {
 
     private List<Location> Locations { get; set; } = new();
 
+    private string? Name { get; set; }
     private string? SerialNumber { get; set; }
     private string? SelectLocationId { get; set; }
     private string? Message { get; set; }
@@ -55,8 +61,14 @@
             .ToListAsync();
     }
 
-    private async Task SaveWeapon()
+    private async Task SaveModule()
     {
+        if (string.IsNullOrWhiteSpace(Name))
+        {
+            Message = "Podaj nazwę modułu!";
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(SerialNumber))
         {
             Message = "Podaj numer seryjny!";
@@ -71,17 +83,18 @@
 
         Guid.TryParse(SelectLocationId, out var locationId);
 
-        var weapon = new Weapon
+        var module = new Module
         {
             Id = Guid.NewGuid(),
+            Name = Name!,
             SerialNumber = SerialNumber!,
             LocationId = locationId
         };
 
-        Db.Weapons.Add(weapon);
+        Db.Modules.Add(module);
         await Db.SaveChangesAsync();
 
-        Message = "Broń została dodana!";
+        Message = "Moduł został dodany!";
     }
 
 }

@@ -18,6 +18,7 @@ else
     <table>
         <thead>
             <tr>
+                <th>Nazwa</th>
                 <th>Numer seryjny</th>
                 <th>Lokalizacja</th>
             </tr>
@@ -26,6 +27,7 @@ else
             @foreach (var module in ModulesList)
             {
                 <tr>
+                    <td>@module.Name</td>
                     <td>@module.SerialNumber</td>
                     <td>@module.Location?.Name</td>
                 </tr>
