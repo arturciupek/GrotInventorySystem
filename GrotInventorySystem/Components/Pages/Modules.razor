@@ -21,6 +21,7 @@ else
                 <th>Nazwa</th>
                 <th>Numer seryjny</th>
                 <th>Lokalizacja</th>
+                <th>Akcja</th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@ else
                     <td>@module.Name</td>
                     <td>@module.SerialNumber</td>
                     <td>@module.Location?.Name</td>
+                    <td><a href="/module-edit/@module.Id">Edytuj</a></td>
                 </tr>
             }
         </tbody>
