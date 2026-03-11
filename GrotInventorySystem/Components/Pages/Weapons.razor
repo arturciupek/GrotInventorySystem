@@ -1,8 +1,10 @@
 ﻿@page "/weapons"
 
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Domain.Enums
 
 @inject ApplicationDbContext Db
 
@@ -21,7 +23,8 @@ else
             <tr>        
                 <th>Numer seryjny</th>
                 <th>Lokalizacja</th>
-                <th>Akcja</th>
+                <th>Edytuj</th>
+                <th>Archiwizuj</th>
             </tr>
         </thead>
         <tbody>   
@@ -31,6 +34,7 @@ else
                     <td>@weapon.SerialNumber</td>
                     <td>@weapon.Location.Name</td>
                     <td><a href="/weapon-edit/@weapon.Id">Edytuj</a></td>
+                    <td><button @onclick="() => ArchiveWeapon(weapon.Id)">Archiwizuj</button></td>
                 </tr>
             }
         </tbody>
@@ -50,7 +54,20 @@ else
     {
         WeaponsList = await Db.Weapons
             .Include(w => w.Location)
+            .Where(w => w.Status == WeaponStatus.Active)
             .OrderBy(w => w.SerialNumber)
             .ToListAsync();
+    }
+
+    private async Task ArchiveWeapon(Guid Id)
+    {
+        var weapon = await Db.Weapons.FindAsync(Id);
+
+        if (weapon == null) return;
+
+        weapon.Status = WeaponStatus.Archived;
+
+        await Db.SaveChangesAsync();
+        await LoadDataAsync();
     }
 }
