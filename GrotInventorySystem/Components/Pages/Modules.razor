@@ -1,12 +1,15 @@
 ﻿@page "/modules"
 
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Domain.Enums
 
 @inject ApplicationDbContext Db
 
 <h3>Lista modułów</h3>
+
 <a href="/module-create">Dodaj moduł</a>
 
 @if (ModulesList.Count == 0)
@@ -21,7 +24,8 @@ else
                 <th>Nazwa</th>
                 <th>Numer seryjny</th>
                 <th>Lokalizacja</th>
-                <th>Akcja</th>
+                <th>Edytuj</th>
+                <th>Archiwizuj</th>
             </tr>
         </thead>
         <tbody>
@@ -32,6 +36,7 @@ else
                     <td>@module.SerialNumber</td>
                     <td>@module.Location?.Name</td>
                     <td><a href="/module-edit/@module.Id">Edytuj</a></td>
+                    <td><button @onclick="() => ArchiveModule(module.Id)">Archiwizuj</button></td>
                 </tr>
             }
         </tbody>
@@ -51,7 +56,20 @@ else
     {
         ModulesList = await Db.Modules
             .Include(m => m.Location)
+            .Where(m => m.Status == ModuleStatus.Active)
             .OrderBy(m => m.SerialNumber)
             .ToListAsync();
+    }
+
+    private async Task ArchiveModule(Guid Id)
+    {
+        var module = await Db.Modules.FindAsync(Id);
+
+        if (module == null) return;
+
+        module.Status = ModuleStatus.Archived;
+
+        await Db.SaveChangesAsync();
+        await LoadDataAsync();
     }
 }
