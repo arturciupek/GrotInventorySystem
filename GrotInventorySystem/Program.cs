@@ -43,6 +43,8 @@ namespace GrotInventorySystem
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+            builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<ModuleAssignmentService>();
 
             builder.Services.AddScoped<EventLogService>();
