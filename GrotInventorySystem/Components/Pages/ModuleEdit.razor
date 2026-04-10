@@ -4,8 +4,10 @@
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
 
 @inject ApplicationDbContext Db
+@inject EventLogService EventLogService
 
 <h3>Edytuj moduł</h3>
 
@@ -105,6 +107,7 @@
         module.LocationId = locationId;
 
         await Db.SaveChangesAsync();
+        await EventLogService.LogAsync($"Edytowano moduł {SerialNumber}");
         Message = "Moduł został edytowany!";
     }
 

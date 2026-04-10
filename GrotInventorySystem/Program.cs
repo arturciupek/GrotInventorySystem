@@ -45,6 +45,8 @@ namespace GrotInventorySystem
 
             builder.Services.AddScoped<ModuleAssignmentService>();
 
+            builder.Services.AddScoped<EventLogService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

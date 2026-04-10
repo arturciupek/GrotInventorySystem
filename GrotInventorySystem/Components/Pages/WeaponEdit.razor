@@ -4,8 +4,10 @@
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
 
 @inject ApplicationDbContext Db
+@inject EventLogService EventLogService
 
 <h3>Edytuj broń</h3>
 
@@ -91,6 +93,7 @@
         weapon.LocationId = locationId;
 
         await Db.SaveChangesAsync();
+        await EventLogService.LogAsync($"Edytowano broń {SerialNumber}");
         Message = "Broń została edytowana!";
     }
 

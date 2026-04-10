@@ -4,8 +4,10 @@
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
 
 @inject ApplicationDbContext Db
+@inject EventLogService EventLogService
 
 <h3>Dodaj broń</h3>
 
@@ -80,7 +82,7 @@
 
         Db.Weapons.Add(weapon);
         await Db.SaveChangesAsync();
-
+        await EventLogService.LogAsync($"Dodano broń {SerialNumber}");
         Message = "Broń została dodana!";
     }
 

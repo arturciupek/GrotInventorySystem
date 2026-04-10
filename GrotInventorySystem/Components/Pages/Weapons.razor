@@ -5,8 +5,10 @@
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
 @using GrotInventorySystem.Domain.Enums
+@using GrotInventorySystem.Services
 
 @inject ApplicationDbContext Db
+@inject EventLogService EventLogService
 
 <h3>Lista broni</h3>
 
@@ -68,6 +70,7 @@ else
         weapon.Status = WeaponStatus.Archived;
 
         await Db.SaveChangesAsync();
-        await LoadDataAsync();
+        await EventLogService.LogAsync($"Zarchiwizowano broń {weapon.SerialNumber}");
+        await LoadDataAsync();   
     }
 }

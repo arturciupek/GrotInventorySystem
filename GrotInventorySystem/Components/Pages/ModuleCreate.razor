@@ -4,8 +4,10 @@
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
 
 @inject ApplicationDbContext Db
+@inject EventLogService EventLogService
 
 <h3>Dodaj moduł</h3>
 
@@ -93,7 +95,7 @@
 
         Db.Modules.Add(module);
         await Db.SaveChangesAsync();
-
+        await EventLogService.LogAsync($"Dodano moduł {SerialNumber}");
         Message = "Moduł został dodany!";
     }
 
