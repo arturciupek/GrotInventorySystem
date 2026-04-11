@@ -1,0 +1,54 @@
+﻿@page "/event-logs"
+
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+
+@inject ApplicationDbContext Db
+
+<h3>Rejestr zdarzeń</h3>
+
+@if (LogsList.Count == 0)
+{
+    <p><b>Brak zdarzeń!</b></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Data i godzina</th>
+                <th>Akcja</th>
+                <th>Użytkownik</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in LogsList)
+            {
+                <tr>
+                    <td>@log.Created</td>
+                    <td>@log.Action</td>
+                    <td>@log.UserId</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+    private List<EventLog> LogsList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        LogsList = await Db.EventLogs
+            .OrderByDescending(l => l.Created)
+            .ToListAsync();
+    }
+
+}
