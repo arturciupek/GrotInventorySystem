@@ -12,4 +12,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Weapon> Weapons => Set<Weapon>();
     public DbSet<WeaponModuleAssignment> WeaponModuleAssignments => Set<WeaponModuleAssignment>();
     public DbSet<EventLog> EventLogs => Set<EventLog>();
+    public DbSet<MovementDocument> MovementDocuments => Set<MovementDocument>();
 }
