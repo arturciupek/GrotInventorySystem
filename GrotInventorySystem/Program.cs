@@ -49,6 +49,8 @@ namespace GrotInventorySystem
 
             builder.Services.AddScoped<EventLogService>();
 
+            builder.Services.AddScoped<MovementDocumentService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

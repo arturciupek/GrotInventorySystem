@@ -4,35 +4,46 @@ using System.Security.Claims;
 
 namespace GrotInventorySystem.Services
 {
-    public class EventLogService
+    public class MovementDocumentService
     {
         private readonly ApplicationDbContext _db;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EventLogService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor)
+        public MovementDocumentService(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor)
         {
             _db = db;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> LogAsync(string action)
+        public async Task<bool> CreateAsync(
+            string documentnumber,
+            Guid? weaponId,
+            Guid? moduleId,
+            Guid? fromLocationId,
+            Guid? toLocationId)
         {
             var userIdString = _httpContextAccessor.HttpContext?.User
                 .FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             Guid? userId = Guid.TryParse(userIdString, out var parsedId) ? parsedId : null;
-            var log = new EventLog
+
+            var move = new MovementDocument
             {
                 Id = Guid.NewGuid(),
-                Action = action,
-                Created = DateTime.UtcNow,
-                UserId = userId
+                DocumentNumber = documentnumber,
+                CreatedAt = DateTime.UtcNow,
+                CreatedByUserId = userId ?? Guid.Empty,
+                WeaponId = weaponId,
+                ModuleId = moduleId,
+                FromLocationId = fromLocationId,
+                ToLocationId = toLocationId
             };
 
-            _db.EventLogs.Add(log);
+            _db.MovementDocuments.Add(move);
             await _db.SaveChangesAsync();
             return true;
 
         }
     }
 }
+
