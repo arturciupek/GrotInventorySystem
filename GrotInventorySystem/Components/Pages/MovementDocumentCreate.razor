@@ -1,0 +1,158 @@
+﻿@page "/movementDocument-create"
+
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
+@using GrotInventorySystem.Domain.Enums
+
+@inject ApplicationDbContext Db
+@inject MovementDocumentService MovementDocumentService
+
+<h3>Stwórz dokument</h3>
+
+@if (!string.IsNullOrWhiteSpace(Message))
+{
+    <p><b>@Message</b></p>
+}
+
+<div>
+    <label>Numer dokumentu:</label><br />
+    <input @bind="DocumentNumber"/>
+</div>
+
+<div style="margin-top: 10px;">
+    <label>Typ:</label><br />
+    <input type="radio" @onchange='() => SelectedType = "weapon"' name="type" /> Broń
+    <input type="radio" @onchange='() => SelectedType = "module"' name="type" /> Moduł
+</div>
+
+@if (SelectedType == "weapon")
+{
+    <div style="margin-top: 10px;">
+    <label>Broń:</label><br />
+    <select @bind="SelectWeaponId">
+        <option value="">-- wybierz broń --</option>
+
+        @foreach (var weapon in Weapons)
+        {
+            <option value="@weapon.Id">@weapon.SerialNumber</option>
+        }
+      </select>
+    </div>
+}
+else if (SelectedType == "module")
+{
+    <div style="margin-top: 10px;">
+        <label>Moduł:</label><br />
+        <select @bind="SelectModuleId">
+            <option value="">-- wybierz moduł --</option>
+
+            @foreach (var module in Modules)
+            {
+                <option value="@module.Id">@module.Name</option>
+            }
+        </select>
+    </div>
+}
+
+<div style="margin-top: 10px;">
+    <label>Lokalizacja źródłowa:</label><br />
+    <select @bind="FromLocationId">
+        <option value="">-- wybierz lokalizację --</option>
+
+        @foreach (var location in Locations)
+        {
+            <option value="@location.Id">@location.Name</option>
+        }
+    </select>
+</div>
+<div style="margin-top: 10px;">
+    <label>Lokalizacja docelowa:</label><br />
+    <select @bind="ToLocationId">
+        <option value="">-- wybierz lokalizację --</option>
+
+        @foreach (var location in Locations)
+        {
+            <option value="@location.Id">@location.Name</option>
+        }
+    </select>
+</div>
+
+<div style="margin-top: 10px;">
+    <button @onclick="SaveDocument">Stwórz dokument</button>
+</div>
+
+@code {
+
+    private List<Location> Locations { get; set; } = new();
+    private List<Weapon> Weapons { get; set; } = new();
+    private List<Module> Modules { get; set; } = new();
+
+    private string? DocumentNumber { get; set; }
+    private string? SelectWeaponId { get; set; }
+    private string? SelectModuleId { get; set; }
+    private string? FromLocationId { get; set; }
+    private string? ToLocationId { get; set; }
+    private string? SelectedType { get; set; }
+    private string? Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        Locations = await Db.Locations
+            .OrderBy(l => l.Name)
+            .ToListAsync();
+
+        Weapons = await Db.Weapons
+            .Where(w => w.Status == WeaponStatus.Active)
+            .OrderBy(w => w.SerialNumber)
+            .ToListAsync();
+
+        Modules = await Db.Modules
+            .Where(m => m.Status == ModuleStatus.Active)
+            .OrderBy(m => m.Name)
+            .ToListAsync();
+            
+    }
+
+    private async Task SaveDocument()
+    {
+        if (string.IsNullOrWhiteSpace(DocumentNumber))
+        {
+            Message = "Podaj numer dokumentu !";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(FromLocationId))
+        {
+            Message = "Wybierz lokalizację!";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ToLocationId))
+        {
+            Message = "Wybierz lokalizację!";
+            return;
+        }
+
+        Guid.TryParse(SelectWeaponId, out var weaponId);
+        Guid.TryParse(SelectModuleId, out var moduleId);
+        Guid.TryParse(FromLocationId, out var fromLocationId);
+        Guid.TryParse(ToLocationId, out var toLocationId);
+
+        await MovementDocumentService.CreateAsync(
+            DocumentNumber!,
+            weaponId == Guid.Empty ? null : weaponId,
+            moduleId == Guid.Empty ? null : moduleId,
+            fromLocationId,
+            toLocationId);
+        Message = "Dokument został utworzony!";
+    }
+
+}
