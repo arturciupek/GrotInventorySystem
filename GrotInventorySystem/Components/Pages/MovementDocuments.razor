@@ -1,0 +1,92 @@
+﻿@page "/movement-documents"
+
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Domain.Enums
+@using GrotInventorySystem.Services
+@using GrotInventorySystem.Domain.ViewModels
+
+@inject ApplicationDbContext Db
+
+<h3>Dokumenty ruchów</h3>
+
+@if (DocumentList.Count == 0)
+{
+    <p><b>Brak dokumentów!</b></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Numer dokumentu</th>
+                <th>Data utworzenia</th>
+                <th>Przedmiot</th>
+                <th>Lokalizacja źródłowa</th>
+                <th>Lokalizacja docelowa</th>
+                <th>Utworzone przez</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var document in DocumentList)
+            {
+                <tr>
+                    <td>@document.DocumentNumber</td>
+                    <td>@document.CreatedAt</td>
+                    <td>@(document.WeaponSerialNumber != null ? $"Broń: {document.WeaponSerialNumber}" : $"Moduł: {document.ModuleName}")</td>
+                    <td>@document.FromLocationName</td>
+                    <td>@document.ToLocationName</td>
+                    <td>@document.CreatedByEmail</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<MovementDocumentViewModel> DocumentList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var documents = await Db.MovementDocuments
+            .OrderByDescending(d => d.CreatedAt)
+            .ToListAsync();
+
+        var weapons = await Db.Weapons
+            .OrderByDescending(w => w.SerialNumber)
+            .ToListAsync();
+
+        var modules = await Db.Modules
+            .OrderByDescending(m => m.SerialNumber)
+            .ToListAsync();
+
+        var users = await Db.Users
+        .OrderByDescending(u => u.UserName)
+        .ToListAsync();
+
+        var locations = await Db.Locations
+        .OrderByDescending(l => l.Name)
+        .ToListAsync();
+      
+
+        DocumentList = documents.Select(d => new MovementDocumentViewModel
+        {
+            DocumentNumber = d.DocumentNumber,
+            CreatedAt = d.CreatedAt,
+            WeaponSerialNumber = d.WeaponId.HasValue ? weapons.FirstOrDefault(w => w.Id == d.WeaponId)?.SerialNumber: null,
+            ModuleName = d.ModuleId.HasValue ? modules.FirstOrDefault(m => m.Id == d.ModuleId)?.Name: null,
+            FromLocationName = locations.FirstOrDefault(l => l.Id == d.FromLocationId)?.Name,
+            ToLocationName = locations.FirstOrDefault(l => l.Id == d.ToLocationId)?.Name,
+            CreatedByEmail = users.FirstOrDefault(u => u.Id == d.CreatedByUserId.ToString())?.Email
+        }).ToList();
+    }
+
+    
+}
