@@ -1,0 +1,73 @@
+﻿@page "/reports"
+
+@using GrotInventorySystem.Domain.Enums
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Domain.ViewModels
+
+@inject ApplicationDbContext Db
+
+<h3>Raporty</h3>
+
+<button onclick="window.print()">Drukuj raport</button>
+
+@if (ReportsList.Count == 0)
+{
+    <p><b>Brak raportów!</b></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Lokalizacja</th>
+                <th>Liczba broni</th>
+                <th>Liczba modułów</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var report in ReportsList)
+            {
+                <tr>
+                    <td>@report.LocationName</td>
+                    <td>@report.WeaponCount</td>
+                    <td>@report.ModuleCount</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+    private List<ReportViewModel> ReportsList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var locations = await Db.Locations
+            .OrderBy(l => l.Name)
+            .ToListAsync();
+
+        var weapons = await Db.Weapons
+            .Where(w => w.Status == WeaponStatus.Active)
+            .ToListAsync();
+
+        var modules = await Db.Modules
+            .Where(m => m.Status == ModuleStatus.Active)
+            .ToListAsync();
+
+        ReportsList = locations.Select(l => new ReportViewModel
+        {
+            LocationName = l.Name,
+            WeaponCount = weapons.Count(weapons => weapons.LocationId == l.Id),
+            ModuleCount = modules.Count(modules => modules.LocationId == l.Id),  
+        }).ToList();
+    }
+
+}
