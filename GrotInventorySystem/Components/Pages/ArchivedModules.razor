@@ -1,0 +1,54 @@
+﻿@page "/archived-modules"
+
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Domain.Enums
+
+@inject ApplicationDbContext Db
+
+<h3>Zarchiwizowane moduły</h3>
+
+@if (ModulesList.Count == 0)
+{
+    <p><b>Brak modułu w ewidencji!</b></p>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Numer seryjny</th>
+                <th>Lokalizacja</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var module in ModulesList)
+            {
+                <tr>
+                    <td>@module.SerialNumber</td>
+                    <td>@module.Location.Name</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+}
+
+@code {
+    private List<Module> ModulesList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        ModulesList = await Db.Modules
+            .Include(m => m.Location)
+            .Where(m => m.Status == ModuleStatus.Archived)
+            .OrderBy(m => m.SerialNumber)
+            .ToListAsync();
+    }
+}
