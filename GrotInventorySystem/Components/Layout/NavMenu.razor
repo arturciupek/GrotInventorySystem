@@ -14,60 +14,59 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Start
+                <i class="bi bi-house-door-fill me-2"></i> Start
             </NavLink>
         </div>
-
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="module-assignments">
-                        <span class="bi bi-diagram-3-fill-nav-menu" aria-hidden="true"></span> Montaż / demontaż
+                        <i class="bi bi-tools me-2"></i> Montaż / demontaż
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="weapons">
-                        <span class="bi bi-list-ul-nav-menu" aria-hidden="true"></span> Broń
+                        <i class="bi bi-bullseye me-2"></i> Broń
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="modules">
-                        <span class="bi bi-puzzle-fill-nav-menu" aria-hidden="true"></span> Moduły
+                        <i class="bi bi-puzzle-fill me-2"></i> Moduły
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="event-logs">
-                        <span class="bi bi-puzzle-fill-nav-menu" aria-hidden="true"></span> Rejestr zdarzeń
+                        <i class="bi bi-clipboard-data me-2"></i> Rejestr zdarzeń
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="movementDocument-create">
-                        <span class="bi bi-file-text-nav-menu" aria-hidden="true"></span> Wydanie / Przyjęcie
+                        <i class="bi bi-file-earmark-plus me-2"></i> Wydanie / Przyjęcie
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="movement-documents">
-                        <span class="bi bi-file-text-nav-menu" aria-hidden="true"></span> Lista dokumentów
+                        <i class="bi bi-file-earmark-text me-2"></i> Lista dokumentów
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="reports">
-                        <span class="bi bi-bar-chart-fill-nav-menu" aria-hidden="true"></span> Raporty
+                        <i class="bi bi-bar-chart-fill me-2"></i> Raporty
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="archived-weapons">
-                        <span class="bi bi-archive-nav-menu" aria-hidden="true"></span> Archiwum broni
+                        <i class="bi bi-archive-fill me-2"></i> Archiwum broni
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="archived-modules">
-                        <span class="bi bi-archive-nav-menu" aria-hidden="true"></span> Archiwum modułów
+                        <i class="bi bi-archive-fill me-2"></i> Archiwum modułów
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                        <i class="bi bi-person-circle me-2"></i> @context.User.Identity?.Name
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -75,7 +74,7 @@
                         <AntiforgeryToken />
                         <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                         <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Wyloguj
+                            <i class="bi bi-box-arrow-left me-2"></i> Wyloguj
                         </button>
                     </form>
                 </div>
@@ -83,7 +82,7 @@
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Logowanie
+                        <i class="bi bi-person-badge me-2"></i> Logowanie
                     </NavLink>
                 </div>
             </NotAuthorized>
