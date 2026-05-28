@@ -9,33 +9,55 @@
 @inject ApplicationDbContext Db
 @inject EventLogService EventLogService
 
-<h3>Dodaj broń</h3>
+<PageTitle>Dodaj broń</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(Message))
-{
-    <p><b>@Message</b></p>
-}
+<div class="container-fluid py-4">
 
-    <div>
-        <label>Numer seryjny:</label><br />
-        <input @bind="SerialNumber"/>
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-bullseye me-2"></i>Dodaj broń
+        </h3>
     </div>
 
-    <div style="margin-top: 10px;">
-        <label>Lokalizacja:</label><br />
-        <select @bind="SelectLocationId">
-            <option value="">-- wybierz lokalizację --</option>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>@Message
+        </div>
+    }
 
-            @foreach (var location in Locations)
-            {
-            <option value="@location.Id">@location.Name</option>
-        }
-        </select>
+    <div class="card border-0 shadow" style="max-width: 500px;">
+        <div class="card-body p-4">
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Numer seryjny</label>
+                <input @bind="SerialNumber" class="form-control" placeholder="Wpisz numer seryjny..." />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Lokalizacja</label>
+                <select @bind="SelectLocationId" class="form-select">
+                    <option value="">-- wybierz lokalizację --</option>
+                    @foreach (var location in Locations)
+                    {
+                        <option value="@location.Id">@location.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button @onclick="SaveWeapon" class="btn btn-dark">
+                    <i class="bi bi-save me-2"></i>Zapisz
+                </button>
+                <a href="/weapons" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                </a>
+            </div>
+
+        </div>
     </div>
 
-    <div style="margin-top: 10px;">
-        <button @onclick="SaveWeapon">Zapisz</button>
-    </div>
+</div>
     
 @code {
 
