@@ -50,3 +50,7 @@ h1:focus {
     border-color: #929292;
 }
 
+.sidebar {
+    background-image: linear-gradient(180deg, #2d3a1e 0%, #1a2210 70%) !important;
+}
+
