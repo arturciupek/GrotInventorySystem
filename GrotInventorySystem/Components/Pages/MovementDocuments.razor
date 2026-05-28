@@ -1,5 +1,4 @@
 ﻿@page "/movement-documents"
-
 @rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
@@ -7,86 +6,105 @@
 @using GrotInventorySystem.Domain.Enums
 @using GrotInventorySystem.Services
 @using GrotInventorySystem.Domain.ViewModels
-
 @inject ApplicationDbContext Db
 
-<h3>Dokumenty ruchów</h3>
+<PageTitle>Dokumenty ruchów</PageTitle>
 
-@if (DocumentList.Count == 0)
-{
-    <p><b>Brak dokumentów!</b></p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Numer dokumentu</th>
-                <th>Data utworzenia</th>
-                <th>Przedmiot</th>
-                <th>Lokalizacja źródłowa</th>
-                <th>Lokalizacja docelowa</th>
-                <th>Utworzone przez</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var document in DocumentList)
-            {
-                <tr>
-                    <td>@document.DocumentNumber</td>
-                    <td>@document.CreatedAt</td>
-                    <td>@(document.WeaponSerialNumber != null ? $"Broń: {document.WeaponSerialNumber}" : $"Moduł: {document.ModuleName}")</td>
-                    <td>@document.FromLocationName</td>
-                    <td>@document.ToLocationName</td>
-                    <td>@document.CreatedByEmail</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-file-earmark-text me-2"></i>Dokumenty ruchów
+        </h3>
+    </div>
+
+    @if (DocumentList.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Brak dokumentów.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Numer dokumentu</th>
+                            <th>Data utworzenia</th>
+                            <th>Przedmiot</th>
+                            <th>Lokalizacja źródłowa</th>
+                            <th>Lokalizacja docelowa</th>
+                            <th>Utworzone przez</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var document in DocumentList)
+                        {
+                            <tr>
+                                <td class="align-middle fw-semibold">@document.DocumentNumber</td>
+                                <td class="align-middle">@document.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td class="align-middle">
+                                    @if (document.WeaponSerialNumber != null)
+                                    {
+                                        <span class="badge bg-dark">
+                                            <i class="bi bi-bullseye me-1"></i>@document.WeaponSerialNumber
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-puzzle-fill me-1"></i>@document.ModuleName
+                                        </span>
+                                    }
+                                </td>
+                                <td class="align-middle">@document.FromLocationName</td>
+                                <td class="align-middle">@document.ToLocationName</td>
+                                <td class="align-middle">@document.CreatedByEmail</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
 
 @code {
     private List<MovementDocumentViewModel> DocumentList { get; set; } = new();
-
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
     }
-
     private async Task LoadDataAsync()
     {
         var documents = await Db.MovementDocuments
             .OrderByDescending(d => d.CreatedAt)
             .ToListAsync();
-
         var weapons = await Db.Weapons
             .OrderByDescending(w => w.SerialNumber)
             .ToListAsync();
-
         var modules = await Db.Modules
             .OrderByDescending(m => m.SerialNumber)
             .ToListAsync();
-
         var users = await Db.Users
-        .OrderByDescending(u => u.UserName)
-        .ToListAsync();
-
+            .OrderByDescending(u => u.UserName)
+            .ToListAsync();
         var locations = await Db.Locations
-        .OrderByDescending(l => l.Name)
-        .ToListAsync();
-      
+            .OrderByDescending(l => l.Name)
+            .ToListAsync();
 
         DocumentList = documents.Select(d => new MovementDocumentViewModel
         {
             DocumentNumber = d.DocumentNumber,
             CreatedAt = d.CreatedAt,
-            WeaponSerialNumber = d.WeaponId.HasValue ? weapons.FirstOrDefault(w => w.Id == d.WeaponId)?.SerialNumber: null,
-            ModuleName = d.ModuleId.HasValue ? modules.FirstOrDefault(m => m.Id == d.ModuleId)?.Name: null,
+            WeaponSerialNumber = d.WeaponId.HasValue ? weapons.FirstOrDefault(w => w.Id == d.WeaponId)?.SerialNumber : null,
+            ModuleName = d.ModuleId.HasValue ? modules.FirstOrDefault(m => m.Id == d.ModuleId)?.Name : null,
             FromLocationName = locations.FirstOrDefault(l => l.Id == d.FromLocationId)?.Name,
             ToLocationName = locations.FirstOrDefault(l => l.Id == d.ToLocationId)?.Name,
             CreatedByEmail = users.FirstOrDefault(u => u.Id == d.CreatedByUserId.ToString())?.Email
         }).ToList();
     }
-
-    
 }
