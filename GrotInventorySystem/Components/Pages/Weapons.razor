@@ -1,57 +1,74 @@
 ﻿@page "/weapons"
-
 @rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
 @using GrotInventorySystem.Domain.Enums
 @using GrotInventorySystem.Services
-
 @inject ApplicationDbContext Db
 @inject EventLogService EventLogService
 
-<h3>Lista broni</h3>
+<PageTitle>Lista broni — GROT</PageTitle>
 
-<a href="/weapon-create">Dodaj broń</a>
+<div class="container-fluid py-4">
 
-@if (WeaponsList.Count == 0)
-{
-    <p><b>Brak broni w ewidencji!</b></p>
-}
-else
-{
-    <table>
-        <thead>         
-            <tr>        
-                <th>Numer seryjny</th>
-                <th>Lokalizacja</th>
-                <th>Edytuj</th>
-                <th>Archiwizuj</th>
-            </tr>
-        </thead>
-        <tbody>   
-            @foreach (var weapon in WeaponsList)
-            {
-                <tr>        
-                    <td>@weapon.SerialNumber</td>
-                    <td>@weapon.Location.Name</td>
-                    <td><a href="/weapon-edit/@weapon.Id">Edytuj</a></td>
-                    <td><button @onclick="() => ArchiveWeapon(weapon.Id)">Archiwizuj</button></td>
-                </tr>
-            }
-        </tbody>
-            
-    </table>
-}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-bullseye me-2"></i>Lista broni
+        </h3>
+        <a href="/weapon-create" class="btn btn-dark">
+            <i class="bi bi-plus-lg me-2"></i>Dodaj broń
+        </a>
+    </div>
+
+    @if (WeaponsList.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Brak broni w ewidencji.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Numer seryjny</th>
+                            <th>Lokalizacja</th>
+                            <th class="text-center">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var weapon in WeaponsList)
+                        {
+                            <tr>
+                                <td class="align-middle fw-semibold">@weapon.SerialNumber</td>
+                                <td class="align-middle">@weapon.Location.Name</td>
+                                <td class="text-center">
+                                    <a href="/weapon-edit/@weapon.Id" class="btn btn-sm btn-outline-dark me-1">
+                                        <i class="bi bi-pencil me-1"></i>Edytuj
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveWeapon(weapon.Id)">
+                                        <i class="bi bi-archive me-1"></i>Archiwizuj
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
 
 @code {
     private List<Weapon> WeaponsList { get; set; } = new();
-
     protected override async Task OnInitializedAsync()
     {
         await LoadDataAsync();
     }
-
     private async Task LoadDataAsync()
     {
         WeaponsList = await Db.Weapons
@@ -60,17 +77,13 @@ else
             .OrderBy(w => w.SerialNumber)
             .ToListAsync();
     }
-
     private async Task ArchiveWeapon(Guid Id)
     {
         var weapon = await Db.Weapons.FindAsync(Id);
-
         if (weapon == null) return;
-
         weapon.Status = WeaponStatus.Archived;
-
         await Db.SaveChangesAsync();
         await EventLogService.LogAsync($"Zarchiwizowano broń {weapon.SerialNumber}");
-        await LoadDataAsync();   
+        await LoadDataAsync();
     }
 }
