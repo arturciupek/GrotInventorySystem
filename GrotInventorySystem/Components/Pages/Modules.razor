@@ -10,41 +10,62 @@
 @inject ApplicationDbContext Db
 @inject EventLogService EventLogService
 
-<h3>Lista modułów</h3>
+<PageTitle>Lista modułów — GROT</PageTitle>
 
-<a href="/module-create">Dodaj moduł</a>
+<div class="container-fluid py-4">
 
-@if (ModulesList.Count == 0)
-{
-    <p><b>Brak modułu w ewidencji!</b></p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Nazwa</th>
-                <th>Numer seryjny</th>
-                <th>Lokalizacja</th>
-                <th>Edytuj</th>
-                <th>Archiwizuj</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var module in ModulesList)
-            {
-                <tr>
-                    <td>@module.Name</td>
-                    <td>@module.SerialNumber</td>
-                    <td>@module.Location?.Name</td>
-                    <td><a href="/module-edit/@module.Id">Edytuj</a></td>
-                    <td><button @onclick="() => ArchiveModule(module.Id)">Archiwizuj</button></td>
-                </tr>
-            }
-        </tbody>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-puzzle-fill me-2"></i>Lista modułów
+        </h3>
+        <a href="/module-create" class="btn btn-dark">
+            <i class="bi bi-plus-lg me-2"></i>Dodaj moduł
+        </a>
+    </div>
 
-    </table>
-}
+    @if (ModulesList.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Brak modułów w ewidencji.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nazwa</th>
+                            <th>Numer seryjny</th>
+                            <th>Lokalizacja</th>
+                            <th class="text-center">Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var module in ModulesList)
+                        {
+                            <tr>
+                                <td class="align-middle fw-semibold">@module.Name</td>
+                                <td class="align-middle">@module.SerialNumber</td>
+                                <td class="align-middle">@module.Location?.Name</td>
+                                <td class="text-center">
+                                    <a href="/module-edit/@module.Id" class="btn btn-sm btn-outline-dark me-1">
+                                        <i class="bi bi-pencil me-1"></i>Edytuj
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveModule(module.Id)">
+                                        <i class="bi bi-archive me-1"></i>Archiwizuj
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
 
 @code {
     private List<Module> ModulesList { get; set; } = new();
