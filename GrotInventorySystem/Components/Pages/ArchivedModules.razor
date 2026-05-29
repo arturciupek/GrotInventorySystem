@@ -7,33 +7,48 @@
 
 @inject ApplicationDbContext Db
 
-<h3>Zarchiwizowane moduły</h3>
+<PageTitle>Archiwum modułów</PageTitle>
 
-@if (ModulesList.Count == 0)
-{
-    <p><b>Brak modułu w ewidencji!</b></p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Numer seryjny</th>
-                <th>Lokalizacja</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var module in ModulesList)
-            {
-                <tr>
-                    <td>@module.SerialNumber</td>
-                    <td>@module.Location.Name</td>
-                </tr>
-            }
-        </tbody>
+<div class="container-fluid py-4">
 
-    </table>
-}
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-archive-fill me-2"></i>Archiwum modułów
+        </h3>
+    </div>
+
+    @if (ModulesList.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Brak zarchiwizowanych modułów.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Numer seryjny</th>
+                            <th>Lokalizacja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var module in ModulesList)
+                        {
+                            <tr>
+                                <td class="align-middle fw-semibold">@module.SerialNumber</td>
+                                <td class="align-middle">@module.Location.Name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
 
 @code {
     private List<Module> ModulesList { get; set; } = new();
