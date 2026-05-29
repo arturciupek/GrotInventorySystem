@@ -7,33 +7,48 @@
 
 @inject ApplicationDbContext Db
 
-<h3>Zarchiwizowana broń</h3>
+<PageTitle>Archiwum broni</PageTitle>
 
-@if (WeaponsList.Count == 0)
-{
-    <p><b>Brak broni w ewidencji!</b></p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Numer seryjny</th>
-                <th>Lokalizacja</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var weapon in WeaponsList)
-            {
-                <tr>
-                    <td>@weapon.SerialNumber</td>
-                    <td>@weapon.Location.Name</td>
-                </tr>
-            }
-        </tbody>
+<div class="container-fluid py-4">
 
-    </table>
-}
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-archive-fill me-2"></i>Archiwum broni
+        </h3>
+    </div>
+
+    @if (WeaponsList.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Brak zarchiwizowanej broni.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Numer seryjny</th>
+                            <th>Lokalizacja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var weapon in WeaponsList)
+                        {
+                            <tr>
+                                <td class="align-middle fw-semibold">@weapon.SerialNumber</td>
+                                <td class="align-middle">@weapon.Location.Name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
 
 @code {
     private List<Weapon> WeaponsList { get; set; } = new();
