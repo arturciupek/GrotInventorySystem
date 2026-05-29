@@ -9,37 +9,59 @@
 @inject ApplicationDbContext Db
 @inject EventLogService EventLogService
 
-<h3>Edytuj moduł</h3>
+<PageTitle>Edytuj moduł</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(Message))
-{
-    <p><b>@Message</b></p>
-}
+<div class="container-fluid py-4">
 
-<div style="margin-top: 10px;">
-    <label>Nazwa:</label><br />
-    <input @bind="Name" />
-</div>
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-puzzle-fill me-2"></i>Edytuj moduł
+        </h3>
+    </div>
 
-<div>
-    <label>Numer seryjny:</label><br />
-    <input @bind="SerialNumber" />
-</div>
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>@Message
+        </div>
+    }
 
-<div style="margin-top: 10px;">
-    <label>Lokalizacja:</label><br />
-    <select @bind="SelectLocationId">
-        <option value="">-- wybierz lokalizację --</option>
+    <div class="card border-0 shadow" style="max-width: 500px;">
+        <div class="card-body p-4">
 
-        @foreach (var location in Locations)
-        {
-            <option value="@location.Id">@location.Name</option>
-        }
-    </select>
-</div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Nazwa</label>
+                <input @bind="Name" class="form-control" placeholder="Wpisz nazwę modułu..." />
+            </div>
 
-<div style="margin-top: 10px;">
-    <button @onclick="EditModule">Zapisz</button>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Numer seryjny</label>
+                <input @bind="SerialNumber" class="form-control" placeholder="Wpisz numer seryjny..." />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Lokalizacja</label>
+                <select @bind="SelectLocationId" class="form-select">
+                    <option value="">-- wybierz lokalizację --</option>
+                    @foreach (var location in Locations)
+                    {
+                        <option value="@location.Id">@location.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button @onclick="EditModule" class="btn btn-dark">
+                    <i class="bi bi-save me-2"></i>Zapisz
+                </button>
+                <a href="/modules" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                </a>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
 @code {
