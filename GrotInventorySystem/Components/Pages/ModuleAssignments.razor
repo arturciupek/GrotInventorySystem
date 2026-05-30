@@ -9,106 +9,127 @@
 @inject ApplicationDbContext Db
 @inject ModuleAssignmentService ModuleAssignmentService
 
-<h3>Przypisania modułów</h3>
+<PageTitle>Montaż / demontaż</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(Message))
-{
-    <p><b>@Message</b></p>
-}
+<div class="container-fluid py-4">
 
-<div style="margin-bottom: 20px;">
-    <h4>Montaż modułu do broni</h4>
-
-    <div>
-        <label>Moduł:</label><br />
-        <select @bind="SelectedModuleIdForMount">
-            <option value="">-- wybierz moduł --</option>
-            @foreach (var module in Modules)
-            {
-                <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
-            }
-        </select>
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-tools me-2"></i>Montaż / demontaż modułów
+        </h3>
     </div>
 
-    <div style="margin-top: 10px;">
-        <label>Broń:</label><br />
-        <select @bind="SelectedWeaponIdForMount">
-            <option value="">-- wybierz broń --</option>
-            @foreach (var weapon in Weapons)
-            {
-                <option value="@weapon.Id">@weapon.SerialNumber</option>
-            }
-        </select>
-    </div>
-
-    <div style="margin-top: 10px;">
-        <button @onclick="MountSelectedModule">Zamontuj</button>
-    </div>
-</div>
-
-<hr />
-
-<div style="margin-top: 20px;">
-    <h4>Demontaż modułu</h4>
-
-    <div>
-        <label>Moduł:</label><br />
-        <select @bind="SelectedModuleIdForUnmount">
-            <option value="">-- wybierz moduł --</option>
-            @foreach (var module in Modules)
-            {
-                <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
-            }
-        </select>
-    </div>
-
-    <div style="margin-top: 10px;">
-        <label>Lokalizacja docelowa:</label><br />
-        <select @bind="SelectedLocationIdForUnmount">
-            <option value="">-- wybierz lokalizację --</option>
-            @foreach (var location in Locations)
-            {
-                <option value="@location.Id">@location.Name</option>
-            }
-        </select>
-    </div>
-
-    <div style="margin-top: 10px;">
-        <button @onclick="UnmountSelectedModule">Zdemontuj</button>
-    </div>
-</div>
-
-<hr />
-
-<div style="margin-top: 20px;">
-    <h4>Aktualne aktywne przypisania</h4>
-
-    @if (ActiveAssignments.Count == 0)
+    @if (!string.IsNullOrWhiteSpace(Message))
     {
-        <p>Brak aktywnych przypisań.</p>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>@Message
+        </div>
     }
-    else
-    {
-        <table>
-            <thead>
-                <tr>
-                    <th style="padding-right: 20px;">Moduł</th>
-                    <th style="padding-right: 20px;">Broń</th>
-                    <th style="padding-right: 20px;">Data montażu (UTC)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in ActiveAssignments)
-                {
-                    <tr>
-                        <td style="padding-right: 20px;">@item.ModuleLabel</td>
-                        <td style="padding-right: 20px;">@item.WeaponSerialNumber</td>
-                        <td style="padding-right: 20px;">@item.MountedAtUtc</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Montaż modułu</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Moduł</label>
+                        <select @bind="SelectedModuleIdForMount" class="form-select">
+                            <option value="">-- wybierz moduł --</option>
+                            @foreach (var module in Modules)
+                            {
+                                <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Broń</label>
+                        <select @bind="SelectedWeaponIdForMount" class="form-select">
+                            <option value="">-- wybierz broń --</option>
+                            @foreach (var weapon in Weapons)
+                            {
+                                <option value="@weapon.Id">@weapon.SerialNumber</option>
+                            }
+                        </select>
+                    </div>
+                    <button @onclick="MountSelectedModule" class="btn btn-dark">
+                        <i class="bi bi-plus-circle me-2"></i>Zamontuj
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-dash-circle me-2"></i>Demontaż modułu</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Moduł</label>
+                        <select @bind="SelectedModuleIdForUnmount" class="form-select">
+                            <option value="">-- wybierz moduł --</option>
+                            @foreach (var module in Modules)
+                            {
+                                <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Lokalizacja docelowa</label>
+                        <select @bind="SelectedLocationIdForUnmount" class="form-select">
+                            <option value="">-- wybierz lokalizację --</option>
+                            @foreach (var location in Locations)
+                            {
+                                <option value="@location.Id">@location.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button @onclick="UnmountSelectedModule" class="btn btn-outline-danger">
+                        <i class="bi bi-dash-circle me-2"></i>Zdemontuj
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Aktualne przypisania</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (ActiveAssignments.Count == 0)
+            {
+                <div class="p-3 text-muted">Brak aktywnych przypisań.</div>
+            }
+            else
+            {
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Moduł</th>
+                            <th>Broń</th>
+                            <th>Data montażu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ActiveAssignments)
+                        {
+                            <tr>
+                                <td class="align-middle">@item.ModuleLabel</td>
+                                <td class="align-middle">@item.WeaponSerialNumber</td>
+                                <td class="align-middle">@item.MountedAtUtc.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
 </div>
 
 @code {
