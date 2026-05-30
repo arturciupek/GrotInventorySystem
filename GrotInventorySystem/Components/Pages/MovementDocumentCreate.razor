@@ -10,78 +10,106 @@
 @inject ApplicationDbContext Db
 @inject MovementDocumentService MovementDocumentService
 
-<h3>Stwórz dokument</h3>
+<PageTitle>Wydanie / Przyjęcie</PageTitle>
 
-@if (!string.IsNullOrWhiteSpace(Message))
-{
-    <p><b>@Message</b></p>
-}
+<div class="container-fluid py-4">
 
-<div>
-    <label>Numer dokumentu:</label><br />
-    <input @bind="DocumentNumber"/>
-</div>
-
-<div style="margin-top: 10px;">
-    <label>Typ:</label><br />
-    <input type="radio" @onchange='() => SelectedType = "weapon"' name="type" /> Broń
-    <input type="radio" @onchange='() => SelectedType = "module"' name="type" /> Moduł
-</div>
-
-@if (SelectedType == "weapon")
-{
-    <div style="margin-top: 10px;">
-    <label>Broń:</label><br />
-    <select @bind="SelectWeaponId">
-        <option value="">-- wybierz broń --</option>
-
-        @foreach (var weapon in Weapons)
-        {
-            <option value="@weapon.Id">@weapon.SerialNumber</option>
-        }
-      </select>
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-file-earmark-plus me-2"></i>Stwórz dokument ruchu
+        </h3>
     </div>
-}
-else if (SelectedType == "module")
-{
-    <div style="margin-top: 10px;">
-        <label>Moduł:</label><br />
-        <select @bind="SelectModuleId">
-            <option value="">-- wybierz moduł --</option>
 
-            @foreach (var module in Modules)
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>@Message
+        </div>
+    }
+
+    <div class="card border-0 shadow" style="max-width: 600px;">
+        <div class="card-body p-4">
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Numer dokumentu</label>
+                <input @bind="DocumentNumber" class="form-control" placeholder="Wpisz numer dokumentu..." />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Typ</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" @onchange='() => SelectedType = "weapon"' name="type" id="typeWeapon" />
+                        <label class="form-check-label" for="typeWeapon">Broń</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" @onchange='() => SelectedType = "module"' name="type" id="typeModule" />
+                        <label class="form-check-label" for="typeModule">Moduł</label>
+                    </div>
+                </div>
+            </div>
+
+            @if (SelectedType == "weapon")
             {
-                <option value="@module.Id">@module.Name</option>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Broń</label>
+                    <select @bind="SelectWeaponId" class="form-select">
+                        <option value="">-- wybierz broń --</option>
+                        @foreach (var weapon in Weapons)
+                        {
+                            <option value="@weapon.Id">@weapon.SerialNumber</option>
+                        }
+                    </select>
+                </div>
             }
-        </select>
+            else if (SelectedType == "module")
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Moduł</label>
+                    <select @bind="SelectModuleId" class="form-select">
+                        <option value="">-- wybierz moduł --</option>
+                        @foreach (var module in Modules)
+                        {
+                            <option value="@module.Id">@module.Name</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Lokalizacja źródłowa</label>
+                <select @bind="FromLocationId" class="form-select">
+                    <option value="">-- wybierz lokalizację --</option>
+                    @foreach (var location in Locations)
+                    {
+                        <option value="@location.Id">@location.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Lokalizacja docelowa</label>
+                <select @bind="ToLocationId" class="form-select">
+                    <option value="">-- wybierz lokalizację --</option>
+                    @foreach (var location in Locations)
+                    {
+                        <option value="@location.Id">@location.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button @onclick="SaveDocument" class="btn btn-dark">
+                    <i class="bi bi-save me-2"></i>Stwórz dokument
+                </button>
+                <a href="/movement-documents" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                </a>
+            </div>
+
+        </div>
     </div>
-}
 
-<div style="margin-top: 10px;">
-    <label>Lokalizacja źródłowa:</label><br />
-    <select @bind="FromLocationId">
-        <option value="">-- wybierz lokalizację --</option>
-
-        @foreach (var location in Locations)
-        {
-            <option value="@location.Id">@location.Name</option>
-        }
-    </select>
-</div>
-<div style="margin-top: 10px;">
-    <label>Lokalizacja docelowa:</label><br />
-    <select @bind="ToLocationId">
-        <option value="">-- wybierz lokalizację --</option>
-
-        @foreach (var location in Locations)
-        {
-            <option value="@location.Id">@location.Name</option>
-        }
-    </select>
-</div>
-
-<div style="margin-top: 10px;">
-    <button @onclick="SaveDocument">Stwórz dokument</button>
 </div>
 
 @code {
