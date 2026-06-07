@@ -7,6 +7,8 @@
 @using GrotInventorySystem.Services
 @inject ApplicationDbContext Db
 @inject EventLogService EventLogService
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <PageTitle>Lista broni</PageTitle>
 
@@ -16,9 +18,11 @@
         <h3 class="fw-bold mb-0">
             <i class="bi bi-bullseye me-2"></i>Lista broni
         </h3>
-        <a href="/weapon-create" class="btn btn-dark">
-            <i class="bi bi-plus-lg me-2"></i>Dodaj broń
-        </a>
+        <AuthorizeView Roles="Admin,Operator">
+            <a href="/weapon-create" class="btn btn-dark">
+                <i class="bi bi-plus-lg me-2"></i>Dodaj broń
+            </a>
+        </AuthorizeView>
     </div>
 
     @if (WeaponsList.Count == 0)
@@ -36,7 +40,9 @@
                         <tr>
                             <th>Numer seryjny</th>
                             <th>Lokalizacja</th>
-                            <th class="text-center">Akcje</th>
+                            <AuthorizeView Roles="Admin,Operator">
+                                <th class="text-center">Akcje</th>
+                            </AuthorizeView>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,14 +51,18 @@
                             <tr>
                                 <td class="align-middle fw-semibold">@weapon.SerialNumber</td>
                                 <td class="align-middle">@weapon.Location.Name</td>
-                                <td class="text-center">
-                                    <a href="/weapon-edit/@weapon.Id" class="btn btn-sm btn-outline-dark me-1">
-                                        <i class="bi bi-pencil me-1"></i>Edytuj
-                                    </a>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveWeapon(weapon.Id)">
-                                        <i class="bi bi-archive me-1"></i>Archiwizuj
-                                    </button>
-                                </td>
+                                <AuthorizeView Roles="Admin,Operator">
+                                    <td class="text-center">
+                                        <a href="/weapon-edit/@weapon.Id" class="btn btn-sm btn-outline-dark me-1">
+                                            <i class="bi bi-pencil me-1"></i>Edytuj
+                                        </a>
+                                        <AuthorizeView Roles="Admin">
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveWeapon(weapon.Id)">
+                                                <i class="bi bi-archive me-1"></i>Archiwizuj
+                                            </button>
+                                        </AuthorizeView>
+                                    </td>
+                                </AuthorizeView>
                             </tr>
                         }
                     </tbody>
