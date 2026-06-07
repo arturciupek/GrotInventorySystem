@@ -5,6 +5,8 @@
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
 @using GrotInventorySystem.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin,Operator")]
 
 @inject ApplicationDbContext Db
 @inject EventLogService EventLogService
