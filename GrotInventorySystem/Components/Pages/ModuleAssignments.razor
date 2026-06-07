@@ -5,6 +5,8 @@
 @using GrotInventorySystem.Data
 @using GrotInventorySystem.Domain.Entities
 @using GrotInventorySystem.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin,Operator,Service")]
 
 @inject ApplicationDbContext Db
 @inject ModuleAssignmentService ModuleAssignmentService
