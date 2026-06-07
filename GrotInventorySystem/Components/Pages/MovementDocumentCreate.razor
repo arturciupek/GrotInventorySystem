@@ -6,6 +6,8 @@
 @using GrotInventorySystem.Domain.Entities
 @using GrotInventorySystem.Services
 @using GrotInventorySystem.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin,Operator,Service")]
 
 @inject ApplicationDbContext Db
 @inject MovementDocumentService MovementDocumentService
