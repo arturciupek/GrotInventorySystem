@@ -60,11 +60,9 @@
                                     <a href="/module-edit/@module.Id" class="btn btn-sm btn-outline-dark me-1">
                                         <i class="bi bi-pencil me-1"></i>Edytuj
                                     </a>
-                                    <AuthorizeView Roles="Admin">
-                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveModule(module.Id)">
-                                            <i class="bi bi-archive me-1"></i>Archiwizuj
-                                        </button>
-                                    </AuthorizeView>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveModule(module.Id)">
+                                        <i class="bi bi-archive me-1"></i>Archiwizuj
+                                    </button>
                                 </td>
                                 </AuthorizeView>
                             </tr>
