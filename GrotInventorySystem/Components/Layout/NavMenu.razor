@@ -19,11 +19,13 @@
         </div>
         <AuthorizeView>
             <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="module-assignments">
-                        <i class="bi bi-tools me-2"></i> Montaż / demontaż
-                    </NavLink>
-                </div>
+                <AuthorizeView Roles="Admin,Operator,Service">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="module-assignments">
+                            <i class="bi bi-tools me-2"></i> Montaż / demontaż
+                        </NavLink>
+                    </div>
+                </AuthorizeView>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="weapons">
                         <i class="bi bi-bullseye me-2"></i> Broń
@@ -39,11 +41,13 @@
                         <i class="bi bi-clipboard-data me-2"></i> Rejestr zdarzeń
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="movementDocument-create">
-                        <i class="bi bi-file-earmark-plus me-2"></i> Wydanie / Przyjęcie
-                    </NavLink>
-                </div>
+                <AuthorizeView Roles="Admin,Operator,Service">
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="movementDocument-create">
+                            <i class="bi bi-file-earmark-plus me-2"></i> Wydanie / Przyjęcie
+                        </NavLink>
+                    </div>
+                </AuthorizeView>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="movement-documents">
                         <i class="bi bi-file-earmark-text me-2"></i> Lista dokumentów
