@@ -56,9 +56,11 @@
                                         <a href="/weapon-edit/@weapon.Id" class="btn btn-sm btn-outline-dark me-1">
                                             <i class="bi bi-pencil me-1"></i>Edytuj
                                         </a>
-                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveWeapon(weapon.Id)">
-                                            <i class="bi bi-archive me-1"></i>Archiwizuj
-                                        </button>
+                                        <AuthorizeView Roles="Admin" Context="adminAuth">
+                                            <button class="btn btn-sm btn-outline-danger" @onclick="() => ArchiveWeapon(weapon.Id)">
+                                                <i class="bi bi-archive me-1"></i>Archiwizuj
+                                            </button>
+                                        </AuthorizeView>
                                     </td>
                                 </AuthorizeView>
                             </tr>
