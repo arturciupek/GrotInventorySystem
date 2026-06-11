@@ -58,10 +58,19 @@ namespace GrotInventorySystem
             {
                 var adminEmail = builder.Configuration["SeedAdmin:Email"];
                 var adminPassword = builder.Configuration["SeedAdmin:Password"];
+                var operatorEmail = builder.Configuration["SeedOperator:Email"];
+                var operatorPassword = builder.Configuration["SeedOperator:Password"];
+                var serwisEmail = builder.Configuration["SeedSerwis:Email"];
+                var serwisPassword = builder.Configuration["SeedSerwis:Password"];
+                var odczytEmail = builder.Configuration["SeedOdczyt:Email"];
+                var odczytPassword = builder.Configuration["SeedOdczyt:Password"];
 
                 if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword))
                 {
-                    DbInitializer.SeedAsync(app.Services, adminEmail, adminPassword)
+                    DbInitializer.SeedAsync(app.Services, adminEmail, adminPassword,
+                        operatorEmail!, operatorPassword!,
+                        serwisEmail!, serwisPassword!,
+                        odczytEmail!, odczytPassword!)
                         .GetAwaiter().GetResult();
                 }
                 app.UseMigrationsEndPoint();
