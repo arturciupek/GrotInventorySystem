@@ -33,11 +33,6 @@
         <div class="card-body p-4">
 
             <div class="mb-3">
-                <label class="form-label fw-semibold">Numer dokumentu</label>
-                <input @bind="DocumentNumber" class="form-control" placeholder="Wpisz numer dokumentu..." />
-            </div>
-
-            <div class="mb-3">
                 <label class="form-label fw-semibold">Typ</label>
                 <div class="d-flex gap-3">
                     <div class="form-check">
@@ -120,7 +115,6 @@
     private List<Weapon> Weapons { get; set; } = new();
     private List<Module> Modules { get; set; } = new();
 
-    private string? DocumentNumber { get; set; }
     private string? SelectWeaponId { get; set; }
     private string? SelectModuleId { get; set; }
     private string? FromLocationId { get; set; }
@@ -153,12 +147,6 @@
 
     private async Task SaveDocument()
     {
-        if (string.IsNullOrWhiteSpace(DocumentNumber))
-        {
-            Message = "Podaj numer dokumentu !";
-            return;
-        }
-
         if (string.IsNullOrWhiteSpace(FromLocationId))
         {
             Message = "Wybierz lokalizację!";
@@ -176,13 +164,12 @@
         Guid.TryParse(FromLocationId, out var fromLocationId);
         Guid.TryParse(ToLocationId, out var toLocationId);
 
-        await MovementDocumentService.CreateAsync(
-            DocumentNumber!,
+        var documentNumber = await MovementDocumentService.CreateAsync(
             weaponId == Guid.Empty ? null : weaponId,
             moduleId == Guid.Empty ? null : moduleId,
             fromLocationId,
             toLocationId);
-        Message = "Dokument został utworzony!";
-    }
 
+        Message = $"Dokument {documentNumber} został utworzony!";
+    }
 }
