@@ -6,6 +6,8 @@
 @using GrotInventorySystem.Domain.Enums
 @using GrotInventorySystem.Services
 @using GrotInventorySystem.Domain.ViewModels
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @inject ApplicationDbContext Db
 
 <PageTitle>Dokumenty ruchów</PageTitle>
