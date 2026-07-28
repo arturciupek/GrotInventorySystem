@@ -58,17 +58,6 @@
                 <input @bind="SerialNumber" class="form-control" placeholder="Wpisz numer seryjny..." />
             </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Lokalizacja</label>
-                <select @bind="SelectLocationId" class="form-select">
-                    <option value="">-- wybierz lokalizację --</option>
-                    @foreach (var location in Locations)
-                    {
-                        <option value="@location.Id">@location.Name</option>
-                    }
-                </select>
-            </div>
-
             <div class="d-flex gap-2">
                 <button @onclick="SaveModule" class="btn btn-dark">
                     <i class="bi bi-save me-2"></i>Zapisz
@@ -85,13 +74,11 @@
 
 @code {
 
-    private List<Location> Locations { get; set; } = new();
-
     private string? Name { get; set; }
     private string? SerialNumber { get; set; }
-    private string? SelectLocationId { get; set; }
     private string? Message { get; set; }
     private string? SelectedImagePath { get; set; }
+    private string? SelectLocationId { get; set; }
     private record ModuleType(string Name, string ImagePath);
 
     private List<ModuleType> ModuleTypes = new()
@@ -116,9 +103,9 @@
 
     private async Task LoadDataAsync()
     {
-        Locations = await Db.Locations
-            .OrderBy(l => l.Name)
-            .ToListAsync();
+        var mainStorage = await Db.Locations
+            .FirstOrDefaultAsync(l => l.Name == "Magazyn główny");
+        SelectLocationId = mainStorage?.Id.ToString();
     }
 
     private async Task SaveModule()
@@ -132,12 +119,6 @@
         if (string.IsNullOrWhiteSpace(SerialNumber))
         {
             Message = "Podaj numer seryjny!";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(SelectLocationId))
-        {
-            Message = "Wybierz lokalizację!";
             return;
         }
 
