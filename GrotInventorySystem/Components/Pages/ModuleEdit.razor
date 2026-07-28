@@ -42,6 +42,23 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label fw-semibold">Typ modułu</label>
+                <div class="row g-2">
+                    @foreach (var moduleType in ModuleTypes)
+                    {
+                        <div class="col-4">
+                            <div class="card @(SelectedImagePath == moduleType.ImagePath ? "border-dark border-2" : "border") text-center p-2"
+                                 style="cursor: pointer;"
+                                 @onclick="() => SelectModuleType(moduleType)">
+                                <img src="@moduleType.ImagePath" style="height: 60px; object-fit: contain;" />
+                                <small class="mt-1">@moduleType.Name</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label fw-semibold">Lokalizacja</label>
                 <select @bind="SelectLocationId" class="form-select">
                     <option value="">-- wybierz lokalizację --</option>
@@ -76,6 +93,24 @@
     private string? SerialNumber { get; set; }
     private string? SelectLocationId { get; set; }
     private string? Message { get; set; }
+    private string? SelectedImagePath { get; set; }
+    private record ModuleType(string Name, string ImagePath);
+
+    private List<ModuleType> ModuleTypes = new()
+{
+    new("Adapter kolby AR", "/images/modules/adapter-kolby.png"),
+    new("Chwyt pistoletowy", "/images/modules/chwyt-pistoletowy.png"),
+    new("Chwyt przedni", "/images/modules/chwyt-przedni.png"),
+    new("Łoże", "/images/modules/loze.png"),
+    new("Lufa 14.5\"", "/images/modules/lufa-14.png"),
+    new("Nóż-bagnet", "/images/modules/noz-bagnet.png"),
+    new("Przeziernik", "/images/modules/przeziernik.png"),
+    new("Szyna Picatinny", "/images/modules/szyna-picatinny.png"),
+    new("Zestaw konwersyjny 7.62", "/images/modules/zestaw-konwersyjny762.png"),
+    new("Zestaw konwersyjny S10", "/images/modules/zestaws10.png"),
+    new("Zestaw konwersyjny S16", "/images/modules/zestaws16.png"),
+};
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,6 +129,7 @@
             Name = module.Name;
             SerialNumber = module.SerialNumber;
             SelectLocationId = module.LocationId.ToString();
+            SelectedImagePath = module.ImagePath;
         }
     }
 
@@ -129,10 +165,17 @@
         module.Name = Name!;
         module.SerialNumber = SerialNumber!;
         module.LocationId = locationId;
+        module.ImagePath = SelectedImagePath;
 
         await Db.SaveChangesAsync();
         await EventLogService.LogAsync($"Edytowano moduł {SerialNumber}");
         Message = "Moduł został edytowany!";
+    }
+
+    private void SelectModuleType(ModuleType moduleType)
+    {
+        Name = moduleType.Name;
+        SelectedImagePath = moduleType.ImagePath;
     }
 
 }
