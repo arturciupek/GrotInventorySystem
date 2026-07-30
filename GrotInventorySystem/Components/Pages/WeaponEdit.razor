@@ -36,17 +36,6 @@
                 <input @bind="SerialNumber" class="form-control" placeholder="Wpisz numer seryjny..." />
             </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Lokalizacja</label>
-                <select @bind="SelectLocationId" class="form-select">
-                    <option value="">-- wybierz lokalizację --</option>
-                    @foreach (var location in Locations)
-                    {
-                        <option value="@location.Id">@location.Name</option>
-                    }
-                </select>
-            </div>
-
             <div class="d-flex gap-2">
                 <button @onclick="EditWeapon" class="btn btn-dark">
                     <i class="bi bi-save me-2"></i>Zapisz
@@ -66,9 +55,7 @@
     [Parameter]
     public Guid Id { get; set; }
 
-    private List<Location> Locations { get; set; } = new();
     private string? SerialNumber { get; set; }
-    private string? SelectLocationId { get; set; }
     private string? Message { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -78,15 +65,10 @@
 
     private async Task LoadDataAsync()
     {
-        Locations = await Db.Locations
-            .OrderBy(l => l.Name)
-            .ToListAsync();
-
         var weapon = await Db.Weapons.FindAsync(Id);
         if (weapon != null)
         {
             SerialNumber = weapon.SerialNumber;
-            SelectLocationId = weapon.LocationId.ToString();
         }
     }
 
@@ -98,14 +80,6 @@
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(SelectLocationId))
-        {
-            Message = "Wybierz lokalizację!";
-            return;
-        }
-
-        Guid.TryParse(SelectLocationId, out var locationId);
-
         var weapon = await Db.Weapons.FindAsync(Id);
         if(weapon == null)
         {
@@ -114,7 +88,6 @@
         }
 
         weapon.SerialNumber = SerialNumber!;
-        weapon.LocationId = locationId;
 
         await Db.SaveChangesAsync();
         await EventLogService.LogAsync($"Edytowano broń {SerialNumber}");

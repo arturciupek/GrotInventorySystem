@@ -43,6 +43,27 @@ namespace GrotInventorySystem.Services
             };
 
             _db.MovementDocuments.Add(move);
+
+            // Zmiana lokalizacji broni i zamontowanych modułów
+            if (weaponId.HasValue && toLocationId.HasValue)
+            {
+                var weapon = await _db.Weapons.FindAsync(weaponId.Value);
+                if (weapon != null)
+                {
+                    weapon.LocationId = toLocationId.Value;
+
+                    var mountedModules = await _db.WeaponModuleAssignments
+                        .Where(x => x.WeaponId == weaponId.Value && x.UnmountedAtUtc == null)
+                        .Include(x => x.Module)
+                        .ToListAsync();
+
+                    foreach (var assignment in mountedModules)
+                    {
+                        assignment.Module.LocationId = toLocationId.Value;
+                    }
+                }
+            }
+
             await _db.SaveChangesAsync();
 
             var fromLocation = await _db.Locations.FindAsync(fromLocationId);

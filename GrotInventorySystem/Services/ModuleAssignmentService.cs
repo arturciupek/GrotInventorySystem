@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GrotInventorySystem.Data;
+﻿using GrotInventorySystem.Data;
 using GrotInventorySystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace GrotInventorySystem.Services;
 
@@ -38,8 +38,9 @@ public class ModuleAssignmentService
             return false;
         }
 
-        // 4) Moduł nie jest już w lokalizacji (bo jest montowany na broni)
-        module.LocationId = null;
+        // 4) Moduł przejmuje lokalizację broni
+        var weapon = await _db.Weapons.FirstOrDefaultAsync(x => x.Id == weaponId);
+        module.LocationId = weapon?.LocationId;
 
         // 5) Dodaj wpis historii montażu
         var assignment = new WeaponModuleAssignment
@@ -81,7 +82,6 @@ public class ModuleAssignmentService
         {
             return false;
         }
-
         // 4) Zamknij montaż (historia)
         activeAssignment.UnmountedAtUtc = DateTime.UtcNow;
 
