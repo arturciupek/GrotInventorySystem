@@ -50,7 +50,7 @@
             {
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Broń</label>
-                    <select @bind="SelectWeaponId" class="form-select">
+                    <select @onchange="OnWeaponChanged" class="form-select">
                         <option value="">-- wybierz broń --</option>
                         @foreach (var weapon in Weapons)
                         {
@@ -63,7 +63,7 @@
             {
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Moduł</label>
-                    <select @bind="SelectModuleId" class="form-select">
+                    <select @onchange="OnModuleChanged" class="form-select">
                         <option value="">-- wybierz moduł --</option>
                         @foreach (var module in Modules)
                         {
@@ -72,17 +72,6 @@
                     </select>
                 </div>
             }
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Lokalizacja źródłowa</label>
-                <select @bind="FromLocationId" class="form-select">
-                    <option value="">-- wybierz lokalizację --</option>
-                    @foreach (var location in Locations)
-                    {
-                        <option value="@location.Id">@location.Name</option>
-                    }
-                </select>
-            </div>
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Lokalizacja docelowa</label>
@@ -141,8 +130,27 @@
         Modules = await Db.Modules
             .Where(m => m.Status == ModuleStatus.Active)
             .OrderBy(m => m.Name)
-            .ToListAsync();
-            
+            .ToListAsync();      
+    }
+
+    private async Task OnWeaponChanged(ChangeEventArgs e)
+    {
+        SelectWeaponId = e.Value?.ToString();
+        if (Guid.TryParse(SelectWeaponId, out var weaponId))
+        {
+            var weapon = await Db.Weapons.FindAsync(weaponId);
+            FromLocationId = weapon?.LocationId.ToString();
+        }
+    }
+
+    private async Task OnModuleChanged(ChangeEventArgs e)
+    {
+        SelectModuleId = e.Value?.ToString();
+        if (Guid.TryParse(SelectModuleId, out var moduleId))
+        {
+            var module = await Db.Modules.FindAsync(moduleId);
+            FromLocationId = module?.LocationId.ToString();
+        }
     }
 
     private async Task SaveDocument()
