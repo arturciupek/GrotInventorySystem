@@ -6,6 +6,7 @@
 @using GrotInventorySystem.Domain.Entities
 @using GrotInventorySystem.Services
 @using Microsoft.AspNetCore.Authorization
+@using GrotInventorySystem.Domain.Enums
 @attribute [Authorize(Roles = "Admin,Operator,Serwis")]
 
 @inject ApplicationDbContext Db
@@ -163,6 +164,7 @@
             .ToListAsync();
 
         Weapons = await Db.Weapons
+            .Where(w => w.Status == WeaponStatus.Active)
             .OrderBy(w => w.SerialNumber)
             .ToListAsync();
 
