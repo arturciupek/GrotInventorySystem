@@ -173,7 +173,9 @@
             .ToListAsync();
 
         ActiveAssignments = await Db.WeaponModuleAssignments
-            .Where(x => x.UnmountedAtUtc == null)
+            .Where(x => x.UnmountedAtUtc == null
+            && x.Weapon.Status == WeaponStatus.Active
+            && x.Module.Status == ModuleStatus.Active)
             .Include(x => x.Module)
             .Include(x => x.Weapon)
             .OrderByDescending(x => x.MountedAtUtc)
