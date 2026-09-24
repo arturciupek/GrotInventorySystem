@@ -7,10 +7,12 @@ namespace GrotInventorySystem.Services;
 public class ModuleAssignmentService
 {
     private readonly ApplicationDbContext _db;
+    private readonly EventLogService _eventLogService;
 
-    public ModuleAssignmentService(ApplicationDbContext db)
+    public ModuleAssignmentService(ApplicationDbContext db, EventLogService eventLogService)
     {
         _db = db;
+        _eventLogService = eventLogService;
     }
 
     public async Task<bool> MountModuleAsync(Guid moduleId, Guid weaponId)
@@ -55,6 +57,7 @@ public class ModuleAssignmentService
         _db.WeaponModuleAssignments.Add(assignment);
 
         await _db.SaveChangesAsync();
+        await _eventLogService.LogAsync($"Zamontowano moduł {module.SerialNumber} na broni {weapon?.SerialNumber}");
         return true;
     }
 
@@ -89,6 +92,7 @@ public class ModuleAssignmentService
         module.LocationId = targetLocationId;
 
         await _db.SaveChangesAsync();
+        await _eventLogService.LogAsync($"Zdemontowano moduł {module.SerialNumber}");
         return true;
     }
 }
