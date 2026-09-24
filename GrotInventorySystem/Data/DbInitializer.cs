@@ -4,7 +4,7 @@ namespace GrotInventorySystem.Data;
 
 public static class DbInitializer
 {
-    public static async Task SeedAsync(IServiceProvider services, string adminEmail, string adminPassword, string operatorEmail, string operatorPassword, string serwisEmail, string serwisPassword, string odczytEmail, string odczytPassword)
+    public static async Task SeedAsync(IServiceProvider services, string adminEmail, string adminPassword, string operatorEmail, string operatorPassword, string serwisEmail, string serwisPassword, string uzytkownikEmail, string uzytkownikPassword)
     {
         using var scope = services.CreateScope();
 
@@ -12,7 +12,7 @@ public static class DbInitializer
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         // Roles
-        string[] roles = { "Admin", "Operator", "Serwis", "Odczyt" };
+        string[] roles = { "Admin", "Operator", "Serwis", "Uzytkownik" };
         foreach (var r in roles)
             if (!await roleManager.RoleExistsAsync(r))
                 await roleManager.CreateAsync(new IdentityRole(r));
@@ -50,16 +50,16 @@ public static class DbInitializer
         if (!await userManager.IsInRoleAsync(serwis, "Serwis"))
             await userManager.AddToRoleAsync(serwis, "Serwis");
 
-        // Odczyt
-        var odczyt = await userManager.FindByEmailAsync(odczytEmail);
-        if (odczyt is null)
+        // Uzytkownik
+        var uzytkownik = await userManager.FindByEmailAsync(uzytkownikEmail);
+        if (uzytkownik is null)
         {
-            odczyt = new ApplicationUser { UserName = odczytEmail, Email = odczytEmail, EmailConfirmed = true };
-            await userManager.CreateAsync(odczyt, odczytPassword);
+            uzytkownik = new ApplicationUser { UserName = uzytkownikEmail, Email = uzytkownikEmail, EmailConfirmed = true };
+            await userManager.CreateAsync(uzytkownik, uzytkownikPassword);
         }
 
-        if (!await userManager.IsInRoleAsync(odczyt, "Odczyt"))
-            await userManager.AddToRoleAsync(odczyt, "Odczyt");
+        if (!await userManager.IsInRoleAsync(uzytkownik, "Uzytkownik"))
+            await userManager.AddToRoleAsync(uzytkownik, "Uzytkownik");
 
 
     }
