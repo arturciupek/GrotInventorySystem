@@ -89,6 +89,13 @@
             return;
         }
 
+        var exists = await Db.Weapons.AnyAsync(w => w.SerialNumber == SerialNumber);
+        if (exists)
+        {
+            Message = "Broń z tym numerem seryjnym już istnieje!";
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(SelectLocationId))
         {
             Message = "Wybierz lokalizację!";

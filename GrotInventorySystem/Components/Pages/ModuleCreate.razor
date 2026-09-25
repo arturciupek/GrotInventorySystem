@@ -122,6 +122,13 @@
             return;
         }
 
+        var exists = await Db.Modules.AnyAsync(m => m.SerialNumber == SerialNumber);
+        if (exists)
+        {
+            Message = "Moduł z tym numerem seryjnym już istnieje!";
+            return;
+        }
+
         Guid.TryParse(SelectLocationId, out var locationId);
 
         var module = new Module
