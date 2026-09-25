@@ -80,6 +80,13 @@
             return;
         }
 
+        var exists = await Db.Weapons.AnyAsync(w => w.SerialNumber == SerialNumber && w.Id != Id);
+        if (exists)
+        {
+            Message = "Broń z tym numerem seryjnym już istnieje!";
+            return;
+        }
+
         var weapon = await Db.Weapons.FindAsync(Id);
         if(weapon == null)
         {
