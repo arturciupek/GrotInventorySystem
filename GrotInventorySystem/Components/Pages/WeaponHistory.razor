@@ -1,0 +1,76 @@
+﻿@page "/weapon-history/{SerialNumber}"
+
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@inject ApplicationDbContext Db
+
+<PageTitle>Historia broni</PageTitle>
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-archive-fill me-2"></i>Historia broni
+        </h3>
+    </div>
+
+    @if (HistoryList.Count == 0)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>Brak histori broni.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Data i godzina</th>
+                            <th>Akcja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in HistoryList)
+                        {
+                            <tr>
+                                <td>@log.Created.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@log.Action</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+
+    public string SerialNumber { get; set; } = default!;
+
+    private List<EventLog> HistoryList { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        HistoryList = await Db.EventLogs
+            .Where(e => e.Action.Contains(SerialNumber))
+            .OrderByDescending(e => e.Created)
+            .ToListAsync();
+    }
+}
+        
