@@ -87,7 +87,14 @@
             PersonList.Add(new Person            {
                 Id = user.Id,
                 Email = user.Email!,
-                Role = roles.FirstOrDefault() ?? "Brak roli"
+                Role = (roles.FirstOrDefault() ?? "Brak roli") switch
+                {
+                    "Admin" => "Administrator",
+                    "Operator" => "Operator",
+                    "Serwis" => "Serwisant",
+                    "Uzytkownik" => "Użytkownik",
+                    _ => "Brak roli"
+                }
             });
         }
     }

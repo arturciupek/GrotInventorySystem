@@ -1,0 +1,117 @@
+﻿@page "/person-edit/{Id}"
+
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@using GrotInventorySystem.Data
+@using GrotInventorySystem.Domain.Entities
+@using GrotInventorySystem.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+@inject ApplicationDbContext Db
+@inject EventLogService EventLogService
+
+<PageTitle>Zmiana roli</PageTitle>
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-person-gear me-2"></i>Zmień role
+        </h3>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Message))
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>@Message
+        </div>
+    }
+
+    <div class="card border-0 shadow" style="max-width: 500px;">
+        <div class="card-body p-4">
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Rola</label>
+                <select @bind="SelectRole" class="form-select">
+                    <option value="">-- wybierz rolę --</option>
+                    <option value="Admin">Administrator</option>
+                    <option value="Operator">Operator</option>
+                    <option value="Serwis">Serwisant</option>
+                    <option value="Uzytkownik">Użytkownik</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button @onclick="EditRole" class="btn btn-dark">
+                    <i class="bi bi-save me-2"></i>Zapisz
+                </button>
+                <a href="/adminpanel" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Anuluj
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@code {
+
+    [Parameter]
+
+    public string Id { get; set; } = default!;
+
+    private string? SelectRole { get; set; }
+    private string? Message { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        var user = await UserManager.FindByIdAsync(Id);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+
+            SelectRole = roles.FirstOrDefault();
+        }
+    }
+
+    private async Task EditRole()
+    {
+        if (string.IsNullOrWhiteSpace(SelectRole))
+        {
+            Message = "Wybierz rolę!";
+            return;
+        }
+
+        var user = await UserManager.FindByIdAsync(Id);
+        if (user == null)
+        {
+            Message = "Nie znaleziono użytkownika!";
+            return;
+        }
+
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        await UserManager.RemoveFromRolesAsync(user, currentRoles);
+        await UserManager.AddToRoleAsync(user, SelectRole);
+
+        var roleName = SelectRole switch
+        {
+            "Admin" => "Administrator",
+            "Operator" => "Operator",
+            "Serwis" => "Serwisant",
+            "Uzytkownik" => "Użytkownik",
+            _ => SelectRole
+        };
+        await EventLogService.LogAsync($"Zmieniono rolę użytkownika {user.Email} na {roleName}");
+        Message = "Rola została zmieniona!";
+    }
+
+}
