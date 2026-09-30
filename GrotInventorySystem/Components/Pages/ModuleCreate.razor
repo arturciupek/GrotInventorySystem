@@ -110,6 +110,8 @@
 
     private async Task SaveModule()
     {
+        SerialNumber = SerialNumber?.Trim();
+
         if (string.IsNullOrWhiteSpace(Name))
         {
             Message = "Podaj nazwę modułu!";

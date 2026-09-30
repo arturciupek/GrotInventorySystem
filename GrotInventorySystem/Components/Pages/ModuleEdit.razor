@@ -116,6 +116,8 @@
 
     private async Task EditModule()
     {
+        SerialNumber = SerialNumber?.Trim();
+
         if (string.IsNullOrWhiteSpace(Name))
         {
             Message = "Podaj nazwę!";

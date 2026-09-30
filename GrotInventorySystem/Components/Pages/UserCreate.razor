@@ -77,6 +77,8 @@
 
     private async Task SaveUser()
     {
+        Email = Email?.Trim().ToLower();
+
         if (string.IsNullOrWhiteSpace(Email)) { Message = "Podaj email!"; return; }
         if (string.IsNullOrWhiteSpace(Password)) { Message = "Podaj hasło!"; return; }
         if (string.IsNullOrWhiteSpace(SelectRole)) { Message = "Wybierz rolę!"; return; }

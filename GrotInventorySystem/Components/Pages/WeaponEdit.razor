@@ -74,6 +74,8 @@
 
     private async Task EditWeapon()
     {
+        SerialNumber = SerialNumber?.Trim();
+
         if (string.IsNullOrWhiteSpace(SerialNumber))
         {
             Message = "Podaj numer seryjny!";
