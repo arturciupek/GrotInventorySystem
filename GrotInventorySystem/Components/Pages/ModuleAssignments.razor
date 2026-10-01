@@ -159,6 +159,7 @@
     private async Task LoadDataAsync()
     {
         Modules = await Db.Modules
+            .Where(m => m.Status == ModuleStatus.Active)
             .OrderBy(m => m.Name)
             .ThenBy(m => m.SerialNumber)
             .ToListAsync();
