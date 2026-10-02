@@ -73,6 +73,14 @@ namespace GrotInventorySystem.Services
                 }
             }
 
+            // Zmiana lokalizacji modułu
+            if (moduleId.HasValue && toLocationId.HasValue)
+            {
+                var module = await _db.Modules.FindAsync(moduleId.Value);
+                if (module != null)
+                    module.LocationId = toLocationId.Value;
+            }
+
             await _db.SaveChangesAsync();
 
             var fromLocation = await _db.Locations.FindAsync(fromLocationId);
