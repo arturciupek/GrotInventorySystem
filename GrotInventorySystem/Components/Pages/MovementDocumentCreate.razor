@@ -135,6 +135,8 @@
 
     private async Task OnWeaponChanged(ChangeEventArgs e)
     {
+        SelectModuleId = null;
+
         SelectWeaponId = e.Value?.ToString();
         if (Guid.TryParse(SelectWeaponId, out var weaponId))
         {
@@ -145,6 +147,8 @@
 
     private async Task OnModuleChanged(ChangeEventArgs e)
     {
+        SelectWeaponId = null;
+
         SelectModuleId = e.Value?.ToString();
         if (Guid.TryParse(SelectModuleId, out var moduleId))
         {
