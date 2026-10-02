@@ -57,7 +57,7 @@
                                     else
                                     {
                                         <span class="badge bg-secondary">
-                                            <i class="bi bi-puzzle-fill me-1"></i>@document.ModuleName
+                                            <i class="bi bi-puzzle-fill me-1"></i>@document.ModuleName (@document.ModuleSerialNumber)
                                         </span>
                                     }
                                 </td>
@@ -104,6 +104,7 @@
             CreatedAt = d.CreatedAt,
             WeaponSerialNumber = d.WeaponId.HasValue ? weapons.FirstOrDefault(w => w.Id == d.WeaponId)?.SerialNumber : null,
             ModuleName = d.ModuleId.HasValue ? modules.FirstOrDefault(m => m.Id == d.ModuleId)?.Name : null,
+            ModuleSerialNumber = d.ModuleId.HasValue ? modules.FirstOrDefault(m => m.Id == d.ModuleId)?.SerialNumber : null,
             FromLocationName = locations.FirstOrDefault(l => l.Id == d.FromLocationId)?.Name,
             ToLocationName = locations.FirstOrDefault(l => l.Id == d.ToLocationId)?.Name,
             CreatedByEmail = users.FirstOrDefault(u => u.Id == d.CreatedByUserId.ToString())?.Email
