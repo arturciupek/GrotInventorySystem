@@ -67,7 +67,7 @@
                         <option value="">-- wybierz moduł --</option>
                         @foreach (var module in Modules)
                         {
-                            <option value="@module.Id">@module.Name</option>
+                            <option value="@module.Id">@module.Name (@module.SerialNumber)</option>
                         }
                     </select>
                 </div>
@@ -184,6 +184,9 @@
             fromLocationId,
             toLocationId);
 
-        Message = $"Dokument {documentNumber} został utworzony!";
+        if (documentNumber.StartsWith("BŁĄD"))
+            Message = documentNumber;
+        else
+            Message = $"Dokument {documentNumber} został utworzony!";
     }
 }

@@ -30,6 +30,15 @@ namespace GrotInventorySystem.Services
 
             var documentNumber = await GenerateDocumentNumberAsync();
 
+            // Sprawdzanie czy moduł nie jest zamontowany
+            if (moduleId.HasValue)
+            {
+                var isMounted = await _db.WeaponModuleAssignments
+                    .AnyAsync(x => x.ModuleId == moduleId.Value && x.UnmountedAtUtc == null);
+                if (isMounted)
+                    return "BŁĄD: Moduł jest zamontowany na broni!";
+            }
+
             var move = new MovementDocument
             {
                 Id = Guid.NewGuid(),
