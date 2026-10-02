@@ -167,6 +167,12 @@
             return;
         }
 
+        if (FromLocationId == ToLocationId)
+        {
+            Message = "Lokalizacja źródłowa i docelowa nie mogą być takie same!";
+            return;
+        }
+
         Guid.TryParse(SelectWeaponId, out var weaponId);
         Guid.TryParse(SelectModuleId, out var moduleId);
         Guid.TryParse(FromLocationId, out var fromLocationId);
