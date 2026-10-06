@@ -86,8 +86,18 @@ namespace GrotInventorySystem.Services
             var fromLocation = await _db.Locations.FindAsync(fromLocationId);
             var toLocation = await _db.Locations.FindAsync(toLocationId);
 
-            await _eventLogService.LogAsync(
-                $"Utworzono dokument ruchu {documentNumber} (z: {fromLocation?.Name}, do: {toLocation?.Name})");
+            if (moduleId.HasValue)
+            {
+                var module = await _db.Modules.FindAsync(moduleId.Value);
+                await _eventLogService.LogAsync(
+                    $"Przesunięto moduł {module?.SerialNumber} z {fromLocation?.Name} do {toLocation?.Name} (dok. {documentNumber})");
+            }
+            else if (weaponId.HasValue)
+            {
+                var weapon = await _db.Weapons.FindAsync(weaponId.Value);
+                await _eventLogService.LogAsync(
+                    $"Przesunięto broń {weapon?.SerialNumber} z {fromLocation?.Name} do {toLocation?.Name} (dok. {documentNumber})");
+            }
 
             return documentNumber;
         }
