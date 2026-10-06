@@ -51,6 +51,11 @@ namespace GrotInventorySystem.Services
                 ToLocationId = toLocationId
             };
 
+            var fromLocation = await _db.Locations.FindAsync(fromLocationId);
+            var toLocation = await _db.Locations.FindAsync(toLocationId);
+
+            await using var transaction = await _db.Database.BeginTransactionAsync();
+
             _db.MovementDocuments.Add(move);
 
             // Zmiana lokalizacji broni i zamontowanych modułów
@@ -69,6 +74,8 @@ namespace GrotInventorySystem.Services
                     foreach (var assignment in mountedModules)
                     {
                         assignment.Module.LocationId = toLocationId.Value;
+                        await _eventLogService.LogAsync(
+                            $"Przesunięto moduł {assignment.Module.SerialNumber} z {fromLocation?.Name} do {toLocation?.Name} (razem z bronią {weapon.SerialNumber}, dok. {documentNumber})");
                     }
                 }
             }
@@ -83,9 +90,6 @@ namespace GrotInventorySystem.Services
 
             await _db.SaveChangesAsync();
 
-            var fromLocation = await _db.Locations.FindAsync(fromLocationId);
-            var toLocation = await _db.Locations.FindAsync(toLocationId);
-
             if (moduleId.HasValue)
             {
                 var module = await _db.Modules.FindAsync(moduleId.Value);
@@ -98,6 +102,8 @@ namespace GrotInventorySystem.Services
                 await _eventLogService.LogAsync(
                     $"Przesunięto broń {weapon?.SerialNumber} z {fromLocation?.Name} do {toLocation?.Name} (dok. {documentNumber})");
             }
+
+            await transaction.CommitAsync();
 
             return documentNumber;
         }
